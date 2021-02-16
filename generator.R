@@ -26,7 +26,7 @@ library(corrplot)
 # S.1: number of strong signal
 # S.2: number of weak but dependent signal
 # S.3: number of weak and independent signal
-# Remain signals are consider to be white noise
+# Remain signals are considered to be white noise
 # 
 # 
 # N: number of observations
@@ -37,6 +37,7 @@ library(corrplot)
 # dataframe for generated X
 # beta: vector of Beta
 # The vector of Y (with error term)
+
 Gendata <- function(P, S.1, S.2, S.3, N = 100, SP=0.8){
   
   cor.matrix <- GenMatrix(P, S.1, S.2, S.3, sp = SP)
@@ -85,7 +86,7 @@ GenMatrix <- function(Size, S1, S2, S3, sp = 0.6)
   return(t(Re.matrix) %*% Re.matrix)
 }
 
-
+GenMatrix(20,3,6,6)
 
 ### Validation of the data-generating method:
 
@@ -104,7 +105,7 @@ GenMatrix <- function(Size, S1, S2, S3, sp = 0.6)
 ###                  14,31 (S.2/e) <0>
 ###                  19,31 (S.3/e) <0>
 
-### Generating 500 times of data to see what will happened:
+### Generating 500 times of data to see what will happen:
 
 
 ME = tibble(Col.1 = c(),
