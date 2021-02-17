@@ -35,6 +35,7 @@ join_matrix <- function(matrix.1, matrix.2, sw = F){
   re.matrix <- diag(0,dim1+dim2, dim1+dim2)
   re.matrix[1:dim1,1:dim1] = matrix.1
   re.matrix[(dim1+1):(dim1+dim2),(dim1+1):(dim1+dim2)] = matrix.2
+  return(re.matrix)
 }
 
 
@@ -58,8 +59,9 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=100){ #S.2 is a vector with same len
     X_PLUS <- Gen_CS(sqrt(1-0.7),sqrt(0.7),1+S.2[i])
     X <- join_matrix(X,X_PLUS)
     pivot[i] <- 1 + sum(S.2[1:(i-1)]) + (i-1) 
+
   }
-  
+
   # Region S.3
   X_3 <- Gen_CS(sqrt(1-0.7),sqrt(0.7),S.3)
   X <- join_matrix(X, X_3)
