@@ -1,9 +1,35 @@
-#### AIC Criteria Selection ###
+#####################################
+#        AIC Criteria Selection     #                     
+#        Forward Selection          #
+#####################################
 
-###### Forward Selection ######
-n.strong = numeric(n) ## n i the number of iteration
-n.weak = numeric(n)
-for (i in 1:n)
+set.seed(1234)
+
+# define number of diff signals
+n_s.1 = 3
+n = 200
+n_exp = 500
+p = 300
+
+data = Gen_Method1(n_s.1,c(20,20,20),60,p,n)
+
+# get a vector of strong signal
+s.1 = c()
+for (i in 1:n_s.1){
+  s.1 = c(rbind(s.1,paste("x",i,sep = "")))
+}
+
+# get the threshold
+
+thre = sqrt(log(p,10)/n)
+
+# get y
+
+y = 
+
+# AIC selection process 
+
+for (i in 1:n_exp)
 {
   fit.forward = step(object = lm(y ~ 1, data = df),
                       scope = formula(lm(y ~ ., data = df)), 
@@ -18,16 +44,3 @@ for (i in 1:n)
 }
 
 
-# A sample codes for generating a data with a combinaton of true predictors and null predictors.
-n <- 1000
-p <- 50
-X <- matrix(rnorm(n * p), n, p)
-b.true <- rnorm(p) * (runif(p) < 0.2)
-cat("True non-zero effects:", which(b.true != 0), "\n")
-Y <- 1 + X %*% b.true + rnorm(n)
-df <- data.frame(cbind(X, Y))
-names(df)[p + 1] <- "y"
-# Forward Selection
-fit.forward <- step(object = lm(y ~ 1, data = df),
-                    scope = formula(lm(y ~ ., data = df)), direction = "forward", k = 2, trace = 0) # A
-summary(fit.forward)
