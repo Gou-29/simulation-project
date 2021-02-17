@@ -41,7 +41,7 @@ join_matrix <- function(matrix.1, matrix.2, sw = F){
 
 ## Generate data as Method 1:
 
-Gen_Method1 <- function(S.1, S.2, S.3, P, N=100){ #S.2 is a vector with same length as S.1
+Gen_Method1 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
@@ -81,7 +81,7 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=100){ #S.2 is a vector with same len
   return(Data)
 }
 
-Gen_Method2 <- function(S.1, S.2, S.3, P, N=100){ #S.2 is a vector with same length as S.1
+Gen_Method2 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
