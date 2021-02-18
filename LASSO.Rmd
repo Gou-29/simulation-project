@@ -83,7 +83,7 @@ df_mat1 = model.matrix(y~ .,df)[, -1]
 # plot(cv.ridge)
 #abline(h = (cv.ridge$cvm + cv.ridge$cvsd)[which.min(cv.ridge$cvm)], col = 4, lwd = 2)
 
-# lasso slelction process
+# lasso selection process
 set.seed(2)
 fit.lasso <- cv.glmnet(y = y, x = df_mat1, 
                        alpha = 1,    
@@ -91,24 +91,20 @@ fit.lasso <- cv.glmnet(y = y, x = df_mat1,
                        type.measure = "mse") 
 
 # extract coefficient
- coeff = predict(fit.lasso, s = "lambda.min", type = "coefficients")[-1,] %>% as.tibble() 
-   attr(x = fit.forward$terms, which = "variables")
- 
-
- 
-
-# forward  
-  fit.forward = step(object = lm(y ~ 1, data = df),
-                      scope = formula(lm(y ~ ., data = df)), 
-                      direction = "forward", k = 2, trace = 0)
-  
-
-
- 
- selected <- attr(x = fit.forward$terms, which = "variables")
- 
- n_s.1_selected = sum(as.character(selected) %in% vec_s.1)
- prop_s.1_selected[[i]] = n_s.1_selected/n_s.1
+ coeff = predict(fit.lasso, s = "lambda.min", type = "coefficients")[-1,] %>%             as.tibble() %>% mutate(number = 1:120) %>% filter(value != 0) 
+ ceoff_s.1 = paste(c('x'),coeff$number,  sep = '')
+                 
+ selected_lasso = sum(ceoff_s.1 %in% vec_s.1)
+ prop_s.1_selected[[i]] = selected_lasso/n_s.1
 }
+
+avg_prop_s.1_selected_lasso = mean(prop_s.1_selected)
+avg_prop_s.1_selected_lasso
+
+ 
+
+
+ 
+ 
 ```
 
