@@ -19,15 +19,15 @@ source("Generator2.R")
 n_s.1 = 3
 n_s.2 = c(2,2,2)
 n_s.3 = sum(n_s.2)
-p = 30 # total parameter size
-n = 20 #sample size
-n_exp = 50 # itertation times
+p = 120 # total parameter size
+n = 100 #sample size
+n_exp = 1 # itertation times
 
 
 # get a vector of strong signal
 vec_s.1 = c()
 for (i in 1:n_s.1){
-  vec_s.1 = rbind(n_s.1,paste("x",i,sep = ""))
+  vec_s.1 = rbind(vec_s.1,paste("x",i,sep = ""))
 }
 vec_s.1 = c(vec_s.1)
 
@@ -37,7 +37,7 @@ thre = sqrt(log(p)/n)
 
 # get y 
 
-beta = rep(c(3,0.1,0,1),c(n_s.1,12,p-n_s.1-12,1))
+beta = rep(c(30,0.1,0,1),c(n_s.1,12,p-n_s.1-12,1))
 
 # col names
 col_name = c()
@@ -46,6 +46,8 @@ for (i in 1:p){
 }
 col_name = rbind(col_name,"y")
 ```
+
+
 
 ```{r}
 # AIC selection procedure
@@ -72,8 +74,7 @@ df =
  selected <- attr(x = fit.forward$terms, which = "variables")
  
  n_s.1_selected = sum(as.character(selected) %in% vec_s.1)
- prop_s.1_selected[[i]] = n_s.1_selected/length(n_s.1)
- 
+ prop_s.1_selected[[i]] = n_s.1_selected/n_s.1
 }
 
 avg_prop_s.1_selected = mean(prop_s.1_selected)
