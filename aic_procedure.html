@@ -375,15 +375,15 @@ n_s.2 = c(2,2,2)
 n_s.3 = sum(n_s.2)
 p = 30 # total parameter size
 n = 20 #sample size
-n_exp = 50 # iertation times
+n_exp = 50 # itertation times
 
 
 # get a vector of strong signal
-s.1 = c()
+vec_s.1 = c()
 for (i in 1:n_s.1){
-  s.1 = rbind(s.1,paste0(&quot;x&quot;,i))
+  vec_s.1 = rbind(n_s.1,paste(&quot;x&quot;,i,sep = &quot;&quot;))
 }
-s.1 = c(s.1)
+vec_s.1 = c(vec_s.1)
 
 # get the threshold
 
@@ -391,7 +391,14 @@ thre = sqrt(log(p)/n)
 
 # get y 
 
-beta = rep(c(3,0.1,0,1),c(n_s.1,12,p-n_s.1-12,1))</code></pre>
+beta = rep(c(3,0.1,0,1),c(n_s.1,12,p-n_s.1-12,1))
+
+# col names
+col_name = c()
+for (i in 1:p){
+  col_name = rbind(col_name,paste0(&quot;x&quot;,i))
+}
+col_name = rbind(col_name,&quot;y&quot;)</code></pre>
 <pre class="r"><code># AIC selection procedure
 
 prop_s.1_selected = numeric(n_exp)
@@ -404,14 +411,8 @@ for (i in 1:n_exp)
 y =  data %*% as.matrix(beta)
 
 # generate dataset for regression 
-col_name = c()
-for (i in 1:p){
-  col_name = rbind(col_name,paste0(&quot;x&quot;,i))
-}
-col_name = rbind(col_name,&quot;y&quot;)
-
 df = 
-  as_tibble(data[,-1]) %&gt;% 
+  as_tibble(data[,-31]) %&gt;% 
   mutate(y = y) %&gt;% 
   setNames(col_name) 
   
@@ -421,8 +422,9 @@ df =
   
  selected &lt;- attr(x = fit.forward$terms, which = &quot;variables&quot;)
  
- n_s.1_selected = sum(as.character(selected) %in% s.1)
- prop_s.1_selected[[i]] = n_s.1_selected/length(s.1)
+ n_s.1_selected = sum(as.character(selected) %in% vec_s.1)
+ prop_s.1_selected[[i]] = n_s.1_selected/length(n_s.1)
+ 
 }</code></pre>
 <pre><code>## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
 ## Using compatibility `.name_repair`.
@@ -528,10 +530,14 @@ df =
 
 ## Warning: attempting model selection on an essentially perfect fit is nonsense
 
+## Warning: attempting model selection on an essentially perfect fit is nonsense
+
+## Warning: attempting model selection on an essentially perfect fit is nonsense
+
 ## Warning: attempting model selection on an essentially perfect fit is nonsense</code></pre>
 <pre class="r"><code>avg_prop_s.1_selected = mean(prop_s.1_selected)
 avg_prop_s.1_selected</code></pre>
-<pre><code>## [1] 0.02</code></pre>
+<pre><code>## [1] 0.98</code></pre>
 
 
 

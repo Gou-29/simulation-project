@@ -21,13 +21,13 @@ n_s.2 = c(2,2,2)
 n_s.3 = sum(n_s.2)
 p = 30 # total parameter size
 n = 20 #sample size
-n_exp = 50 # iertation times
+n_exp = 50 # itertation times
 
 
 # get a vector of strong signal
 vec_s.1 = c()
 for (i in 1:n_s.1){
-  vec_s.1 = rbind(s.1,paste0("x",i))
+  vec_s.1 = rbind(n_s.1,paste("x",i,sep = ""))
 }
 vec_s.1 = c(vec_s.1)
 
@@ -61,7 +61,7 @@ y =  data %*% as.matrix(beta)
 
 # generate dataset for regression 
 df = 
-  as_tibble(data[,-1]) %>% 
+  as_tibble(data[,-31]) %>% 
   mutate(y = y) %>% 
   setNames(col_name) 
   
@@ -72,9 +72,8 @@ df =
  selected <- attr(x = fit.forward$terms, which = "variables")
  
  n_s.1_selected = sum(as.character(selected) %in% vec_s.1)
- prop_s.1_selected[[i]] = n_s.1_selected/length(s.1)
+ prop_s.1_selected[[i]] = n_s.1_selected/length(n_s.1)
  
- i=i+1
 }
 
 avg_prop_s.1_selected = mean(prop_s.1_selected)
