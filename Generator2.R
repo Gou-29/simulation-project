@@ -29,7 +29,7 @@ Gen_AR <- function(ro, size){
 }
 
 
-join_matrix <- function(matrix.1, matrix.2, sw = F){
+join_matrix <- function(matrix.1, matrix.2){
   dim1 <- dim(matrix.1)[1]
   dim2 <- dim(matrix.2)[1]
   re.matrix <- diag(0,dim1+dim2, dim1+dim2)
@@ -81,7 +81,7 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same leng
   return(Data)
 }
 
-Gen_Method2 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same length as S.1
+Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){ #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
@@ -91,18 +91,18 @@ Gen_Method2 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same leng
   
   # Region S.1 and S.2, with pivot specified:
   
-  X <- Gen_AR(0.7,1+S.2[1])
+  X <- Gen_AR(ro, 1+S.2[1])
   pivot <- S.2   # For the position of strong signal
   pivot[1] <- 1
   
   for(i in 2:S.1){
-    X_PLUS <- Gen_AR(0.7,1+S.2[i])
+    X_PLUS <- Gen_AR(ro, 1+S.2[i])
     X <- join_matrix(X,X_PLUS)
     pivot[i] <- 1 + sum(S.2[1:(i-1)]) + (i-1) 
   }
   
   # Region S.3
-  X_3 <- Gen_AR(0.7,S.3)
+  X_3 <- Gen_AR(ro,S.3)
   X <- join_matrix(X, X_3)
   
   # Noise and error term (i.i.d)
