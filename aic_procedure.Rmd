@@ -21,7 +21,7 @@ n_s.2 = c(2,2,2)
 n_s.3 = sum(n_s.2)
 p = 120 # total parameter size
 n = 100 #sample size
-n_exp = 1 # itertation times
+n_exp = 10 # itertation times
 
 
 # get a vector of strong signal
@@ -63,7 +63,7 @@ y =  data %*% as.matrix(beta)
 
 # generate dataset for regression 
 df = 
-  as_tibble(data[,-31]) %>% 
+  as_tibble(data[,-(p+1)]) %>% 
   mutate(y = y) %>% 
   setNames(col_name) 
   
