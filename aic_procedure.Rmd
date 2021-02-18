@@ -20,8 +20,8 @@ n_s.1 = 3
 n_s.2 = c(2,2,2)
 p = 19 # total parameter size
 n_s.3 = sum(n_s.2)
-n = 20 #sample size
-n_exp = 1 # itertation times
+n = 200 #sample size
+n_exp = 100 # itertation times
 
 
 # get a vector of strong signal
@@ -37,7 +37,7 @@ thre = sqrt(log(p)/n)
 
 # get y 
 
-beta = rep(c(20,0.5,0.5,0,1),c(n_s.1,sum(n_s.2),n_s.3,p-n_s.1-sum(n_s.2)-n_s.3,1))
+beta = rep(c(5.5,5.4,5.4,0,1),c(n_s.1,sum(n_s.2),n_s.3,p-n_s.1-sum(n_s.2)-n_s.3,1))
 
 # col names
 col_name = c()
@@ -69,7 +69,7 @@ df =
   
   fit.forward = step(object = lm(y ~ 1, data = df),
                       scope = formula(lm(y ~ ., data = df)), 
-                      direction = "forward", k = 2, trace = 2) 
+                      direction = "forward", k = 2, trace = 0) 
   
  selected <- attr(x = fit.forward$terms, which = "variables")
  
