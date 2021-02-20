@@ -371,11 +371,11 @@ summary {
 
 <pre class="r"><code># define number of diff signals
 n_s.1 = 3
-n_s.2 = c(8,8,8)
+n_s.2 = c(2,2,2)
 p = 250 # total parameter size
 n_s.3 = sum(n_s.2)
 n = 200 #sample size
-n_exp = 1 # itertation times
+n_exp = 1 # iteration times
 
 
 # get a vector of strong signal
@@ -388,10 +388,11 @@ vec_s.1 = c(vec_s.1)
 # get the threshold
 
 thre = sqrt(log(p)/n)
-
-# get y 
-
-beta = rep(c(0.17,0.15,0.15,0,1),c(n_s.1,sum(n_s.2),n_s.3,p-n_s.1-sum(n_s.2)-n_s.3,1))
+c = 1
+b = .3
+# get beta 
+beta = rep(c(runif(n_s.1,c*thre,c*thre+b),runif(sum(n_s.2)+n_s.3,-c*thre,c*thre),0,1),
+           times = c(rep(1,n_s.1),rep(1,sum(n_s.2)+n_s.3),p-n_s.1-sum(n_s.2)-n_s.3,1))
 
 # col names
 col_name = c()
@@ -405,7 +406,7 @@ prop_s.1_selected = numeric(n_exp)
 
 for (i in 1:n_exp)
 {
-  data = Gen_Method1(n_s.1,n_s.2,n_s.3,P=p,N=n)
+  data = Gen_Method2(n_s.1,n_s.2,n_s.3,P=p,N=n)
   
 # get y 
 y =  data %*% as.matrix(beta)
@@ -430,8 +431,6 @@ df =
 ## This warning is displayed once every 8 hours.
 ## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <pre><code>## Warning: attempting model selection on an essentially perfect fit is nonsense
-
-## Warning: attempting model selection on an essentially perfect fit is nonsense
 
 ## Warning: attempting model selection on an essentially perfect fit is nonsense
 
