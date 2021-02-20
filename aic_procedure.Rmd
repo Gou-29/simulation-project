@@ -89,9 +89,9 @@ df =
  n_s.1_selected = sum(as.character(selected) %in% vec_s.1)
  n_s.2_selected = sum(as.character(selected) %in% vec_s.2)
  n_s.3_selected = sum(as.character(selected) %in% vec_s.3)
- prop_t[[i]] = (n_s.1_selected+sum(n_s.2)-n_s.2_selected+n_s.3- n_s.3_selected)/(n_s.1+sum(n_s.2)+n_s.3)
+ prop_t[[i]] = (n_s.1_selected+n_s.2_selected+ n_s.3_selected)/(n_s.1+sum(n_s.2)+n_s.3)
  
- prop_f[[i]] = (n_s.1 - n_s.1_selected + n_s.2_selected +n_s.3_selected)/(n_s.1+sum(n_s.2)+n_s.3)
+ prop_f[[i]] = ( sum(1-as.character(selected) %in%c(as.character(vec_s.1),as.character(vec_s.2),as.character(vec_s.3))))/(p-n_s.1-sum(n_s.2)-n_s.3)
  
  prop_stro[[i]] = n_s.1_selected/n_s.1
 }
