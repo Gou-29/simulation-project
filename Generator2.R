@@ -39,9 +39,11 @@ join_matrix <- function(matrix.1, matrix.2){
 }
 
 
-## Generate data as Method 1:
+## Generate dataests:
 
-Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ #S.2 is a vector with same length as S.1
+Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ 
+  
+  #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
@@ -81,7 +83,8 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ #S.2 is a vector with
   return(Data)
 }
 
-Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){ #S.2 is a vector with same length as S.1
+Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){ 
+  #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
@@ -121,11 +124,58 @@ Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){ #S.2 is a vector with
   return(Data)
 }
 
+Gen_Method3 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ 
+  #S.2 is a vector with same length as S.1
+  if(length(S.2) != S.1){
+    return("Length of S.2 must be same as value of S.1")
+  }
+  if(S.1 + sum(S.2) + S.3 > P){
+    return("invalid total length!")
+  }
+  WN = P - S.1 - sum(S.2) - S.3 
+  if(WN %% S.1 !=0){
+    return("Non - compatible length of white noise!")
+  }
+  # Region S.1 and S.2 + White noise, with pivot specified:
+  # In this case, #White noise = c * #Strong predictor 
+  
+  X <- Gen_CS(sqrt(1-co),sqrt(co),1+S.2[1]+ WN/S.1)
+  pivot <- S.2   # For the position of strong signal
+  pivot[1] <- 1
+  pivot_WN <- c((S.1 + S.2[1] + 1):(S.1 + S.2[1] + WN/S.1) ) # For the position of white noise
+  
+  for(i in 2:S.1){
+    X_PLUS <- Gen_CS(sqrt(1-co),sqrt(co),1 + S.2[i] + WN/S.1)
+    X <- join_matrix(X,X_PLUS)
+    pivot[i] <- 1 + sum(S.2[1:(i-1)]) + (i-1) + (i-1) * WN/S.1 
+    pivot_WN <- c(pivot_WN, 
+                  (S.1 + sum(S.2[1:i]) + 1 + (i-1) * WN/S.1)
+                  :(S.1 + sum(S.2[1:i]) + i * WN/S.1))
+    
+  }
+  
+  # Region S.3
+  X_3 <- Gen_CS(sqrt(1-co),sqrt(co),S.3)
+  X <- join_matrix(X, X_3)
+  
+  # Error term
+  X_ER <- diag(1,1,1)
+  X <- join_matrix(X, X_ER)
+  
+  # Final data:
+  
+  Data <- rmvnorm(N, sigma = X) 
+  
+  # Put pivots in first
+  
+  Data <- cbind(Data[,pivot], Data[,-pivot])
+  
+  # Put pivots of white noise.
 
-
-
-
-
+  Data <- cbind(Data[,-c(pivot_WN,P+1)],Data[,pivot_WN], Data[,(P+1)])
+                     
+  return(Data)
+}
 
 
 
