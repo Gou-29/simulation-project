@@ -41,7 +41,7 @@ join_matrix <- function(matrix.1, matrix.2){
 
 ## Generate data as Method 1:
 
-Gen_Method1 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same length as S.1
+Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
   }
@@ -51,19 +51,19 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=80){ #S.2 is a vector with same leng
   
   # Region S.1 and S.2, with pivot specified:
   
-  X <- Gen_CS(sqrt(1-0.7),sqrt(0.7),1+S.2[1])
+  X <- Gen_CS(sqrt(1-co),sqrt(co),1+S.2[1])
   pivot <- S.2   # For the position of strong signal
   pivot[1] <- 1
   
   for(i in 2:S.1){
-    X_PLUS <- Gen_CS(sqrt(1-0.7),sqrt(0.7),1+S.2[i])
+    X_PLUS <- Gen_CS(sqrt(1-co),sqrt(co),1+S.2[i])
     X <- join_matrix(X,X_PLUS)
     pivot[i] <- 1 + sum(S.2[1:(i-1)]) + (i-1) 
 
   }
 
   # Region S.3
-  X_3 <- Gen_CS(sqrt(1-0.7),sqrt(0.7),S.3)
+  X_3 <- Gen_CS(sqrt(1-co),sqrt(co),S.3)
   X <- join_matrix(X, X_3)
 
   # Noise and error term (i.i.d)
