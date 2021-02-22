@@ -72,7 +72,7 @@ AICMETHOD <- function(TuneGrid, Iteration){
     # generate dataset for regression 
     
     data = data %>% 
-      as.tibble() %>% 
+      as_tibble() %>% 
       mutate(y = y) %>% 
       select(c(y, col_name))
     

@@ -1,0 +1,363 @@
+---
+title: "read_csv"
+author: "Jiying Han"
+date: "2/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(patchwork)
+```
+
+
+
+
+```{r echo = FALSE, message=FALSE}
+df <- 
+  list.files(path="./SimResult2", full.names = TRUE) %>% 
+  lapply(read_csv) %>% 
+  dplyr::bind_rows() %>% 
+  as_tibble() %>% 
+  janitor::clean_names() %>% 
+  dplyr::arrange(number) %>% 
+   mutate(
+    s1_prop = s1_selected/s1,
+    s2_prop = s2_selected/25,
+    s3_prop = s3_selected/s3
+  )
+
+```
+
+```{r echo = FALSE, warning=FALSE}
+# summary by method for aic
+summary1_df = df %>% 
+  group_by(method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by method")
+summary1_df
+
+# summary by n for aic
+summary2_df = df %>% 
+  group_by(n) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by n")
+summary2_df
+
+# summary by p for aic
+summary3_df = df %>% 
+  group_by(p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by p")
+summary3_df
+
+# summary by n & p for aic
+summary4_df = df %>% 
+  group_by(n,p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by n&p")
+summary4_df
+# conclusion: when n = 100, with p increasing, the success selection proportion in all three signals will firstly increase and then decrease,however, when p fix, there is no big differnce between n = 100 and n =200.
+
+# visulization
+prop_plot = df %>% 
+  group_by(n,p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+)  %>% 
+  filter(n == 100) %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color = signal)) + 
+  geom_line() +
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P")
+prop_plot
+  
+# summary by corr for aic
+summary5_df = df %>% 
+  group_by(corr) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by correlation")
+summary5_df
+
+# summary by beta for aic
+summary6_df = df %>% 
+  group_by(beta) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by beta")
+summary6_df
+
+# summary by non-selected for aic (elective)
+summary7_df = df %>% 
+  group_by(n,p) %>% 
+  summarize(
+    white_noise = mean(no_selected)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by white noise")
+summary7_df
+
+# summary by n,p,method for aic
+prop_method_plot = df %>% 
+  group_by(n,p,method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  filter(n == 100) %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color =signal)) + 
+  geom_smooth(se = FALSE) + 
+  facet_grid(method~ .) +
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P-AIC")
+prop_method_plot
+
+df1_plot = df %>% 
+  filter(method == 1) 
+
+aic_11 = ggplot(df1_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "AIC Method 1 for s1 selection proportion")
+aic_21 = ggplot(df1_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "AIC Method 1 for s2 selection proportion")
+aic_31 = ggplot(df1_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "AIC Method 1 for s3 selection proportion")
+
+
+
+
+df2_plot = df %>% 
+  filter(method == 2) 
+ 
+aic_12 = ggplot(df2_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s1 selection proportion")
+aic_22 = ggplot(df2_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s2 selection proportion")
+aic_32 = ggplot(df2_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s3 selection proportion")
+
+
+df3_plot = df %>% 
+  filter(method == 3) 
+ 
+aic_13 = ggplot(df3_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s1 selection proportion")
+aic_23 = ggplot(df3_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s2 selection proportion")
+aic_33 = ggplot(df3_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "AIC Method 2 for s3 selection proportion")
+```
+
+```{r echo = FALSE,  warning=FALSE}
+aic_11+aic_12+aic_13
+aic_21+aic_22+aic_23
+aic_31+aic_32+aic_33
+```
+
+# Next part is for lasso
+
+```{r echo = FALSE, message = FALSE, warning=FALSE}
+df_lasso <- 
+  list.files(path="./Lasso", full.names = TRUE) %>% 
+  lapply(read_csv) %>% 
+  dplyr::bind_rows() %>% 
+  as_tibble() %>% 
+  janitor::clean_names() %>% 
+  dplyr::arrange(number) %>% 
+   mutate(
+    s1_prop = s1_selected/s1,
+    s2_prop = s2_selected/25,
+    s3_prop = s3_selected/s3
+  )
+```
+
+```{r echo = FALSE,  warning=FALSE}
+# summary by method for lasso
+summary1_lasso_df = df_lasso %>% 
+  group_by(method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by method")
+summary1_lasso_df
+
+# summary by n for aic
+summary2_lasso_df = df_lasso %>% 
+  group_by(n) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by n")
+summary2_lasso_df
+
+# summary by p for aic
+summary3_lasso_df = df_lasso %>% 
+  group_by(p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by p")
+summary3_lasso_df
+
+# summary by n & p for aic
+summary4_lasso_df = df_lasso %>% 
+  group_by(n,p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by n&p")
+summary4_lasso_df
+# conclusion: when n = 100, with p increasing, the success selection proportion in all three signals will firstly increase and then decrease,however, when p fix, there is no big differnce between n = 100 and n =200.
+
+# visulization
+prop_lasso_plot = df_lasso %>% 
+  group_by(n,p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+)  %>% 
+  filter(n == 100) %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color = signal)) + 
+  geom_line() +
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P")
+prop_lasso_plot
+  
+# summary by corr for aic
+summary5_lasso_df = df_lasso %>% 
+  group_by(corr) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by correlation")
+summary5_lasso_df 
+
+# summary by beta for aic
+summary6_lasso_df = df_lasso %>% 
+  group_by(beta) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by beta")
+summary6_lasso_df
+
+# summary by non-selected for aic (elective)
+summary7_lasso_df = df_lasso %>% 
+  group_by(n,p) %>% 
+  summarize(
+    white_noise = mean(no_selected)
+) %>% 
+  knitr::kable(caption = "The performance of LASSO variable selection by white noise")
+summary7_lasso_df
+
+# summary by n,p,method for aic
+prop_lasso_method_plot = df_lasso %>% 
+  group_by(n,p,method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  filter(n == 100) %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color =signal)) + 
+  geom_smooth(se = FALSE) + 
+  facet_grid(method~ .) +
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P-LASSO")
+prop_lasso_method_plot
+
+df1_lasso_plot = df_lasso %>% 
+  filter(method == 1) 
+
+lasso_11 = ggplot(df1_lasso_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "LASSO Method 1 for s1 selection proportion")
+lasso_21 = ggplot(df1_lasso_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "LASSO Method 1 for s2 selection proportion")
+lasso_31 = ggplot(df1_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "LASSO Method 1 for s3 selection proportion")
+
+
+
+
+df2_lasso_plot = df_lasso %>% 
+  filter(method == 2) 
+ 
+lasso_12 = ggplot(df2_lasso_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s1 selection proportion")
+lasso_22 = ggplot(df2_lasso_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s2 selection proportion")
+lasso_32 = ggplot(df2_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s3 selection proportion")
+
+
+
+df3_lasso_plot = df_lasso %>% 
+  filter(method == 3) 
+ 
+lasso_13 = ggplot(df3_lasso_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s1 selection proportion")
+lasso_23 = ggplot(df3_lasso_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s2 selection proportion")
+lasso_33 = ggplot(df3_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s3 selection proportion")
+```
+
+```{r echo = FALSE,  warning=FALSE}
+lasso_11+lasso_12+lasso_13 
+lasso_21+lasso_22+lasso_23
+lasso_31+lasso_32+lasso_33
+```
+
+
+
