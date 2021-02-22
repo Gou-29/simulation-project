@@ -40,16 +40,15 @@ AICMETHOD <- function(TuneGrid, Iteration){
     # get beta 
     
     if(TuneGrid$beta == "close") {
-      beta = c(runif(n_s.1,      min = thre * 1.001, max = thre * 1.5),  #S.1
-               runif(sum(n_s.2), min = thre * 0.5, max = thre * 0.999),  #S.2
-               runif(n_s.3,      min = thre * 0.5, max = thre * 0.999),  #S.3
+      beta = c(runif(n_s.1,      min = thre * 1.001, max = thre * 1.25),  #S.1
+               runif(sum(n_s.2), min = thre * 0.75, max = thre * 0.999),  #S.2
+               runif(n_s.3,      min = thre * 0.75, max = thre * 0.999),  #S.3
                rep(0, p - n_s.1 - sum(n_s.2) - n_s.3),                   #White noise
                1)                                                        #Error term = 1
-    }
-    else{
-      beta = c(runif(n_s.1,      min = thre * 1.5, max = thre * 2),  #S.1
-               runif(sum(n_s.2), min = thre * 0.0, max = thre * 0.5),  #S.2
-               runif(n_s.3,      min = thre * 0.0, max = thre * 0.5),  #S.3
+    }else{
+      beta = c(runif(n_s.1,      min = thre * 1.75, max = thre * 2),  #S.1
+               runif(sum(n_s.2), min = thre * 0.0, max = thre * 0.25),  #S.2
+               runif(n_s.3,      min = thre * 0.0, max = thre * 0.25),  #S.3
                rep(0, p - n_s.1 - sum(n_s.2) - n_s.3),                   #White noise
                1)                                                        #Error term = 1
     }

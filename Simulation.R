@@ -14,5 +14,5 @@ for(SIM in 1:dim(SimGrid)[1]){
   
   # Simulation of AIC
   #AICMETHOD(Grid, Iteration = 100)
-  LASSOMETHOD(Grid, Iteration = 20)
+  LASSOMETHOD(Grid, Iteration = 5)
 }
