@@ -2,7 +2,8 @@
 library(tidyverse)
 library(mvtnorm)
 library(corrplot)
-
+library(glmnet)
+# Conpound Symmetric
 
 Gen_CS <- function(sigma, sigma_1, size){
   re.cs <- diag(sigma^2 + sigma_1^2,size,size)
@@ -16,6 +17,7 @@ Gen_CS <- function(sigma, sigma_1, size){
 }
 
 
+# Ar(1)
 
 Gen_AR <- function(ro, size){
   re.ar <- diag(1, size, size)
@@ -28,6 +30,7 @@ Gen_AR <- function(ro, size){
   return(re.ar)
 }
 
+# Matrix operation
 
 join_matrix <- function(matrix.1, matrix.2){
   dim1 <- dim(matrix.1)[1]
@@ -41,7 +44,7 @@ join_matrix <- function(matrix.1, matrix.2){
 
 ## Generate dataests:
 
-Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ 
+Gen_Method1 <- function(S.1, S.2, S.3, P, N, co){ 
   
   #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
@@ -83,7 +86,7 @@ Gen_Method1 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){
   return(Data)
 }
 
-Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){ 
+Gen_Method2 <- function(S.1, S.2, S.3, P, N, ro){ 
   #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
@@ -124,7 +127,7 @@ Gen_Method2 <- function(S.1, S.2, S.3, P, N=80, ro = 0.5){
   return(Data)
 }
 
-Gen_Method3 <- function(S.1, S.2, S.3, P, N=80, co = 0.7){ 
+Gen_Method3 <- function(S.1, S.2, S.3, P, N, co){ 
   #S.2 is a vector with same length as S.1
   if(length(S.2) != S.1){
     return("Length of S.2 must be same as value of S.1")
