@@ -43,7 +43,7 @@ Est_Method1 <- function(TuneGrid, Iteration){
   for (i in 1:Iteration)
   {
     set.seed(i)
-    Seed <- c(Seed, i)
+    #Seed <- c(Seed, i)
     # get beta 
     
     if(TuneGrid$beta == "close") {
@@ -220,7 +220,7 @@ Est_Method2 <- function(TuneGrid, Iteration){
   for (i in 1:Iteration)
   {
     set.seed(i)
-    Seed <- c(Seed, i)
+    #Seed <- c(Seed, i)
     # get beta 
     
     if(TuneGrid$beta == "close") {
@@ -357,8 +357,7 @@ Est_Method2 <- function(TuneGrid, Iteration){
   
 }
 
-# Add by chance:
-
+# Add S.2 and S.3 totally by chance:
 Est_Method3 <- function(TuneGrid, Iteration){
   # define number of diff signals
   n_s.1 = TuneGrid$S1
@@ -397,7 +396,7 @@ Est_Method3 <- function(TuneGrid, Iteration){
   for (i in 1:Iteration)
   {
     set.seed(i)
-    Seed <- c(Seed, i)
+    #Seed <- c(Seed, i)
     # get beta 
     
     if(TuneGrid$beta == "close") {
@@ -578,7 +577,7 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
   for (i in 1:Iteration)
   {
     set.seed(i)
-    Seed <- c(Seed, i)
+    #Seed <- c(Seed, i)
     # get beta 
     
     if(TuneGrid$beta == "close") {
