@@ -391,7 +391,7 @@ Est_Method3 <- function(TuneGrid, Iteration){
   names(TrueBeta) <- c(str_c(vec_s.1,"_TURE"))
   TrueBeta <- TrueBeta %>% as.tibble() %>% slice(-1)
   
-  # Method 1:
+  # Method 3:
   
   for (i in 1:Iteration)
   {
@@ -490,9 +490,9 @@ Est_Method3 <- function(TuneGrid, Iteration){
       
       # add variable by chance (S.1 - S.2):
       
-      vec23 <- c(vec_s.2, vec_s.3)
+      vec_s.23 <- c(vec_s.2, vec_s.3)
       
-      if (length(vec23) != 0 ){
+      if (length(vec_s.23) != 0 ){
         add_col_number <- sample(1:length(vec_s.23),1)
         add_col_name   <- vec_s.23[ add_col_number]
         vec_s.23       <- vec_s.23[-add_col_number]
@@ -572,7 +572,7 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
   names(TrueBeta) <- c(str_c(vec_s.1,"_TURE"))
   TrueBeta <- TrueBeta %>% as.tibble() %>% slice(-1)
   
-  # Method 1:
+  # Method 4:
   
   for (i in 1:Iteration)
   {
@@ -671,10 +671,10 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
       
       # add variable by chance (S.1 - S.2):
       
-      vec23 <- c(sample(vec_s.2, size = length(vec_s.2) * p.s2), 
+      vec_s.23 <- c(sample(vec_s.2, size = length(vec_s.2) * p.s2), 
                  sample(vec_s.3, size = length(vec_s.3) * p.s3))
       
-      if (length(vec23) != 0 ){
+      if (length(vec_s.23) != 0 ){
         add_col_number <- sample(1:length(vec_s.23),1)
         add_col_name   <- vec_s.23[ add_col_number]
         vec_s.23       <- vec_s.23[-add_col_number]
