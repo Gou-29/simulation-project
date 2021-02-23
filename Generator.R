@@ -3,7 +3,8 @@ library(tidyverse)
 library(mvtnorm)
 library(corrplot)
 library(glmnet)
-# Conpound Symmetric
+
+# Compound Symmetric
 
 Gen_CS <- function(sigma, sigma_1, size){
   re.cs <- diag(sigma^2 + sigma_1^2,size,size)
@@ -15,7 +16,6 @@ Gen_CS <- function(sigma, sigma_1, size){
   }
   return(re.cs)
 }
-
 
 # Ar(1)
 
