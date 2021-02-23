@@ -1,3 +1,5 @@
+source("Generator.R")
+
 LASSOMETHOD <- function(TuneGrid, Iteration){
   # define number of diff signals
   n_s.1 = TuneGrid$S1
