@@ -95,7 +95,7 @@ AICMETHOD <- function(TuneGrid, Iteration){
   }
   
   
-  Filename = str_c("Simresult1/AIC - TuneGrid-", TuneGrid$Number ,".csv")
+  Filename = str_c("Simresult1/AIC/AIC - TuneGrid-", TuneGrid$Number ,".csv")
   TuneGrid_final %>% 
     mutate(S1_Selected = S.1_Selected,
            S2_Selected = S.2_Selected,

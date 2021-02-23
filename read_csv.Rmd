@@ -19,7 +19,7 @@ library(patchwork)
 
 ```{r echo = FALSE, message=FALSE}
 df <- 
-  list.files(path="./SimResult2", full.names = TRUE) %>% 
+  list.files(path="./Simresult1/AIC", full.names = TRUE) %>% 
   lapply(read_csv) %>% 
   dplyr::bind_rows() %>% 
   as_tibble() %>% 
@@ -191,7 +191,7 @@ aic_31+aic_32+aic_33
 
 ```{r echo = FALSE, message = FALSE, warning=FALSE}
 df_lasso <- 
-  list.files(path="./Lasso", full.names = TRUE) %>% 
+  list.files(path="./Simresult1/Lasso", full.names = TRUE) %>% 
   lapply(read_csv) %>% 
   dplyr::bind_rows() %>% 
   as_tibble() %>% 
@@ -348,9 +348,9 @@ lasso_32 = ggplot(df2_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(tit
 df3_lasso_plot = df_lasso %>% 
   filter(method == 3) 
  
-lasso_13 = ggplot(df3_lasso_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s1 selection proportion")
-lasso_23 = ggplot(df3_lasso_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s2 selection proportion")
-lasso_33 = ggplot(df3_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "LASSO Method 2 for s3 selection proportion")
+lasso_13 = ggplot(df3_lasso_plot,aes(x = s1_prop)) + geom_histogram() + labs(title = "LASSO Method 3 for s1 selection proportion")
+lasso_23 = ggplot(df3_lasso_plot,aes(x = s2_prop)) + geom_histogram() + labs(title = "LASSO Method 3 for s2 selection proportion")
+lasso_33 = ggplot(df3_lasso_plot,aes(x = s3_prop)) + geom_histogram() + labs(title = "LASSO Method 3 for s3 selection proportion")
 ```
 
 ```{r echo = FALSE,  warning=FALSE}
