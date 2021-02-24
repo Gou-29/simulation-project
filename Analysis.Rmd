@@ -1,0 +1,263 @@
+---
+title: "Analyse"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = F,
+                      warning = F)
+library(tidyverse)
+library(patchwork)
+```
+
+## read the data
+```{r}
+df_aic <- read_csv("result_aic.csv")
+df_lasso <- read_csv("result_lasso.csv")
+```
+
+
+## aic
+
+
+### whole summary statistics
+```{r}
+summary1_df = 
+  df_aic %>% 
+  group_by(method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by method")
+summary1_df
+```
+
+### summary by p
+```{r}
+# summary by p for aic
+df_aic %>% 
+  group_by(p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by p")
+```
+
+## summary by correlation
+```{r}
+df_aic %>% 
+  group_by(corr) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by correlation")
+```
+
+## summary by wide/close
+
+```{r}
+df_aic %>% 
+  group_by(beta) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by beta")
+```
+
+## summary by design of beta
+
+```{r}
+df_aic %>% 
+  mutate(beta_design = c(rep(1,7200),rep(2,7200))) %>% 
+  group_by(beta_design) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of AIC variable selection by model design")
+  
+```
+
+### more complicated tables:
+
+
+#### close + correlation
+```{r}
+df_aic %>% 
+  group_by(beta,corr) %>% 
+  summarize( 
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "correlation + beta")
+# intersting!
+```
+
+#### design + correlation
+
+```{r}
+df_aic %>% 
+  mutate(beta_design = c(rep(1,7200),rep(2,7200))) %>% 
+  group_by(beta_design,corr) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "design + cor")
+# do not interest 
+```
+
+
+#### n + corr
+```{r}
+df_aic %>% 
+  group_by(corr,p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "p + cor")
+
+# not interesting
+```
+
+
+# plots:
+
+### total sumary 
+```{r}
+prop_plot = 
+  df_aic %>% 
+  group_by(p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+)  %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color = signal)) + 
+  geom_line() +
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P")
+prop_plot
+```
+
+### by beta design
+
+
+### by beta -> method
+```{r}
+prop_plot = 
+  df_aic %>% 
+  group_by(method, p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+)  %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  mutate(method = as.factor(method)) %>% 
+  ggplot(aes(x = p, y = avg_proportion, color = method)) + 
+  geom_line() +
+  facet_wrap(.~signal,scales = "free")+
+  labs(y = "Average proportion", 
+       x = "Number of predictors", 
+       title = "Proportion of three signals vs P")
+prop_plot
+```
+
+
+
+### by corr + beta
+```{r}
+prop_plot = 
+  df_aic %>% 
+  group_by(corr, beta, method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+)  %>% 
+  pivot_longer(
+    avg_s1_prop:avg_s3_prop,
+    names_to = "signals",
+    values_to = "avg_proportion"
+  ) %>% 
+    separate(signals, sep= "_", into = c("avg","signal","prop")) %>% select(-avg, - prop) %>% 
+  #mutate(corr = as.factor(corr)) %>% 
+  ggplot(aes(x = corr, y = avg_proportion, color = beta)) + 
+  geom_line() +
+  facet_grid(method~signal, scales = "free_y")+
+  labs(y = "Average proportion", 
+       x = "correlation", 
+       title = "Proportion of three signals vs P")
+prop_plot
+```
+
+
+## Lasso
+
+
+### whole summary statistics
+```{r}
+df_lasso %>% 
+  group_by(method) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of Lasso variable selection by method")
+```
+
+### summary by p
+```{r}
+# summary by p for aic
+df_lasso %>% 
+  group_by(p) %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+) %>% 
+  knitr::kable(caption = "The performance of Lasso variable selection by p")
+```
+
+
+
+
+## different method comparison:
+
+```{r}
+
+```
+
+
+
+
+
+
