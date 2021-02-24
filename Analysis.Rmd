@@ -23,8 +23,17 @@ df_lasso <- read_csv("result_lasso.csv")
 
 ### whole summary statistics
 ```{r}
-summary1_df = 
-  df_aic %>% 
+
+df_aic %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+  ) %>% 
+  knitr::kable(caption = "The performance of AIC variable")
+
+
+df_aic %>% 
   group_by(method) %>% 
   summarize(
     avg_s1_prop = mean(s1_prop),
@@ -32,7 +41,6 @@ summary1_df =
     avg_s3_prop = mean(s3_prop)
 ) %>% 
   knitr::kable(caption = "The performance of AIC variable selection by method")
-summary1_df
 ```
 
 ### summary by p
@@ -224,6 +232,15 @@ prop_plot
 
 ### whole summary statistics
 ```{r}
+df_lasso %>% 
+  summarize(
+    avg_s1_prop = mean(s1_prop),
+    avg_s2_prop = mean(s2_prop),
+    avg_s3_prop = mean(s3_prop)
+  ) %>% 
+  knitr::kable(caption = "The performance of Lasso")
+
+
 df_lasso %>% 
   group_by(method) %>% 
   summarize(
