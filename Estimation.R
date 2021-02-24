@@ -470,6 +470,9 @@ Est_Method3 <- function(TuneGrid, Iteration){
     betasim <- betasim %>% as.tibble() 
     
     TrueBeta <- bind_rows(TrueBeta, betasim)
+    
+    
+    vec_s.23 <- c(vec_s.2, vec_s.3)
     # Do a whole variable adding process in this generated data:
     
     for (j in (length(vec_s.1)+1):min(p,n)){
@@ -490,7 +493,7 @@ Est_Method3 <- function(TuneGrid, Iteration){
       
       # add variable by chance (S.1 - S.2):
       
-      vec_s.23 <- c(vec_s.2, vec_s.3)
+      
       
       if (length(vec_s.23) != 0 ){
         add_col_number <- sample(1:length(vec_s.23),1)
@@ -510,6 +513,7 @@ Est_Method3 <- function(TuneGrid, Iteration){
       TuneGrid_final <- bind_rows(TuneGrid_final, TuneGrid)
       TrueBeta <- bind_rows(TrueBeta, betasim)
       dfresult <- bind_rows(dfresult, dfresult_update)
+      
     }
     
     # Save the result:
@@ -651,7 +655,11 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
     betasim <- betasim %>% as.tibble() 
     
     TrueBeta <- bind_rows(TrueBeta, betasim)
+    
+    vec_s.23 <- c(sample(vec_s.2, size = length(vec_s.2) * p.s2), 
+                  sample(vec_s.3, size = length(vec_s.3) * p.s3))
     # Do a whole variable adding process in this generated data:
+    
     
     for (j in (length(vec_s.1)+1):min(p,n)){
       
@@ -671,8 +679,6 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
       
       # add variable by chance (S.1 - S.2):
       
-      vec_s.23 <- c(sample(vec_s.2, size = length(vec_s.2) * p.s2), 
-                 sample(vec_s.3, size = length(vec_s.3) * p.s3))
       
       if (length(vec_s.23) != 0 ){
         add_col_number <- sample(1:length(vec_s.23),1)
