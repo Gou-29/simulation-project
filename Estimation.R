@@ -493,8 +493,6 @@ Est_Method3 <- function(TuneGrid, Iteration){
       
       # add variable by chance (S.1 - S.2):
       
-      
-      
       if (length(vec_s.23) != 0 ){
         add_col_number <- sample(1:length(vec_s.23),1)
         add_col_name   <- vec_s.23[ add_col_number]
@@ -535,7 +533,7 @@ Est_Method3 <- function(TuneGrid, Iteration){
 
 # Add by proportion solved by AIC/Lasso model:
 
-Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
+Est_Method4 <- function(TuneGrid, Iteration, p.s2, p.s3){
   # define number of diff signals
   n_s.1 = TuneGrid$S1
   n_s.2 = c(TuneGrid$S21,TuneGrid$S22,TuneGrid$S23,TuneGrid$S24,TuneGrid$S25)
@@ -543,12 +541,6 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
   n_s.3 = TuneGrid$S3
   n = TuneGrid$N   #sample size
   cor = TuneGrid$corr
-  
-  
-  # Data from PropGrid
-  
-  p.s2 <- PropGrid$S2
-  p.s3 <- PropGrid$S3
   
   # get names
   vec_s.1 = str_c("V",c(1:n_s.1))
@@ -591,7 +583,7 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
                rep(0, p - n_s.1 - sum(n_s.2) - n_s.3),                   #White noise
                1)                                                        #Error term = 1
     }else{
-      beta = c(runif(n_s.1,      min = thre * 1.75, max = thre * 2),  #S.1
+      beta = c(runif(n_s.1,      min = thre * 1.75, max = thre * 2),   #S.1
                runif(sum(n_s.2), min = thre * 0.0, max = thre * 0.25),  #S.2
                runif(n_s.3,      min = thre * 0.0, max = thre * 0.25),  #S.3
                rep(0, p - n_s.1 - sum(n_s.2) - n_s.3),                   #White noise
@@ -698,6 +690,10 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
       TuneGrid_final <- bind_rows(TuneGrid_final, TuneGrid)
       TrueBeta <- bind_rows(TrueBeta, betasim)
       dfresult <- bind_rows(dfresult, dfresult_update)
+      
+      if(length(vec_w.n) ==0){
+        break
+      }
     }
     
     # Save the result:
@@ -708,7 +704,8 @@ Est_Method4 <- function(TuneGrid, Iteration, PropGrid){
     
   }
   
-  Filename = str_c("Simresult2/Method4/Method4 - TuneGrid-", TuneGrid$Number ,".csv")
+  Filename = str_c("Simresult2/Method4/Method4 - TuneGrid-",
+                   TuneGrid$Number ," - ps2 - ", p.s2, "- ps3 - ", p.s3,".csv")
   bind_cols(TuneGrid_final, DFF, TrueBeta) %>% 
     mutate(VaddMethod = rep("Method4",nrow(DFF))) %>% 
     write_csv(Filename)
