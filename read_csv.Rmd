@@ -15,7 +15,9 @@ library(patchwork)
 ```
 
 
+## Making Tables and Plots for AIC Method
 
+read in aic resulted data
 
 ```{r echo = FALSE, message=FALSE}
 df <- 
@@ -27,7 +29,7 @@ df <-
   dplyr::arrange(number) %>% 
    mutate(
     s1_prop = s1_selected/s1,
-    s2_prop = s2_selected/25,
+    s2_prop = s2_selected/rowSums(select(.,s21:s25)),
     s3_prop = s3_selected/s3
   )
 
@@ -187,7 +189,7 @@ aic_21+aic_22+aic_23
 aic_31+aic_32+aic_33
 ```
 
-# Next part is for lasso
+## Making Tables and Plots for Lasso Method
 
 ```{r echo = FALSE, message = FALSE, warning=FALSE}
 df_lasso <- 
