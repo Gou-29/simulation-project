@@ -1,0 +1,68 @@
+---
+title: "Question2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = F,
+                      warning = F)
+library(tidyverse)
+
+```
+
+# read and save the raw data:
+
+```{r}
+df_method1 <- 
+  list.files(path="./Simresult2/Method1", full.names = TRUE) %>% 
+  lapply(read_csv) %>% 
+  dplyr::bind_rows() %>% 
+  as_tibble() %>% 
+  janitor::clean_names() %>% 
+  dplyr::arrange(number) %>% 
+   mutate(
+    s1_prop = s1_selected/s1,
+    s2_prop = s2_selected/sum(s2),
+    s3_prop = s3_selected/s3
+  )
+```
+
+## manipulate the data:
+
+```{r}
+
+preprocessdata <- function(path_to_file)
+{
+  filelist = list.files(path=path_to_file, full.names = TRUE)
+  for(i in 1:144) {
+    filename = filelist[i]
+    fileout = str_replace(filename, "./Simresult2", "./Simresult3")
+    read_csv(filename) %>% 
+      mutate(v1_bias = abs(V1_TURE - V1),
+         v2_bias = abs(V2_TURE - V2),
+         v3_bias = abs(V3_TURE - V3),
+         v4_bias = abs(V4_TURE - V4),
+         v5_bias = abs(V5_TURE - V5)) %>% 
+      group_by(Number,N,P,corr,method,beta,
+           S1,S21,S22,S23,S24,S25,S3,
+           No_Predictors, VaddMethod) %>% 
+      summarise(v1_bias_mean = mean(v1_bias),
+            v2_bias_mean = mean(v2_bias),
+            v3_bias_mean = mean(v3_bias),
+            v4_bias_mean = mean(v4_bias),
+            v5_bias_mean = mean(v5_bias),
+            v1_variance = var(V1),
+            v2_variance = var(V2),
+            v3_variance = var(V3),
+            v4_variance = var(V4),
+            v5_variance = var(V5),
+            mse = mean(MSE)) %>% 
+      filter(No_Predictors < 100) %>% 
+      write.csv(fileout)
+}
+}
+
+preprocessdata
+```
+
