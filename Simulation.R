@@ -22,5 +22,7 @@ for(SIM in 1:2){
   Grid <- SimGrid[SIM,]
   #Est_Method1(Grid, Iteration = 5)
   #Est_Method2(Grid, Iteration = 100)
-  Est_Method3(Grid, Iteration = 3)
+  Est_Method3(Grid, Iteration = 100)
+  Est_Method4(Grid, Iteration = 100, p.s2 = 0.799, p.s3 = 0.806)
+  Est_Method4(Grid, Iteration = 100, p.s2 = 0.867, p.s3 = 0.898)
 }
