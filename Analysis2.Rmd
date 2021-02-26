@@ -1,0 +1,263 @@
+---
+title: "Question2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = F,
+                      warning = F)
+library(tidyverse)
+```
+
+# Eead and save the raw data:
+
+## Manipulate the data:
+
+```{r,eval = F}
+preprocessdata <- function(path_to_file, NUMBER)
+{
+  filelist = list.files(path=path_to_file, full.names = TRUE)
+  for(i in 1:144) {
+    filename = filelist[i]
+    fileout = str_replace(filename, "./SimResult2", "./SimResult2/summary")
+    read_csv(filename) %>% 
+      mutate(v1_bias = abs(V1_TURE - V1)/V1_TURE,
+             v2_bias = abs(V2_TURE - V2)/V2_TURE,
+             v3_bias = abs(V3_TURE - V3)/V3_TURE,
+             v4_bias = abs(V4_TURE - V4)/V4_TURE,
+             v5_bias = abs(V5_TURE - V5)/V5_TURE) %>% 
+      group_by(Number,N,P,corr,method,beta,
+               S1,S21,S22,S23,S24,S25,S3,
+               No_Predictors, VaddMethod) %>% 
+      summarise(v1_bias = mean(v1_bias),
+                v2_bias = mean(v2_bias),
+                v3_bias = mean(v3_bias),
+                v4_bias = mean(v4_bias),
+                v5_bias = mean(v5_bias),
+                v1_variance = var(V1),
+                v2_variance = var(V2),
+                v3_variance = var(V3),
+                v4_variance = var(V4),
+                v5_variance = var(V5),
+                mse = mean(MSE)) %>% 
+      filter(No_Predictors < 100) %>% 
+      mutate(VaddMethod = as.character(NUMBER)) %>% 
+      write.csv(fileout)
+}
+}
+
+preprocessdata("./SimResult2/Method1",1)
+preprocessdata("./SimResult2/Method2",2)
+preprocessdata("./SimResult2/Method3",3)
+preprocessdata("./SimResult2/Method4_AIC",4)
+preprocessdata("./SimResult2/Method4_Lasso",5)
+
+```
+
+```{r, eval=FALSE}
+summaryccsv <- function(path_to_file){
+  filename <- str_replace(path_to_file, "./SimResult2/summary/","")
+  filename <- str_c(filename, ".csv")
+  filename <- str_c("./Finaldata/question2/", filename)
+  list.files(path=path_to_file, full.names = TRUE) %>% 
+    lapply(read_csv) %>% 
+    dplyr::bind_rows() %>% 
+    as_tibble() %>% 
+    janitor::clean_names() %>% 
+    dplyr::arrange(number) %>% 
+    select(-x1) %>% 
+    write_csv(filename)
+}
+
+summaryccsv("./SimResult2/summary/Method1")
+summaryccsv("./SimResult2/summary/Method2")
+summaryccsv("./SimResult2/summary/Method3")
+summaryccsv("./SimResult2/summary/Method4_AIC")
+summaryccsv("./SimResult2/summary/Method4_Lasso")
+```
+
+# Read the data
+
+```{r}
+dataq2 <-
+  list.files(path="Finaldata/question2", full.names = TRUE) %>% 
+  lapply(read_csv) %>% 
+  dplyr::bind_rows() %>% 
+  as_tibble() %>% 
+  janitor::clean_names() %>% 
+  arrange(no_predictors) %>% 
+  select(-number)
+```
+
+# bias v.s. n_predictors/methods
+
+## number of s2/s3 = 10
+
+### plot 1:
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_bias = mean(v5_bias)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","5")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_bias, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p)
+```
+
+
+
+### plot 2:
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_bias = mean(v5_bias)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("3","4","5")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_bias, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p)
+```
+
+
+## number of s2/s3 = 20
+
+### plot 3:
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_bias = mean(v5_bias)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_bias, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p)
+```
+
+### plot 4:
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_bias = mean(v5_bias)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("5","4","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_bias, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p)
+```
+
+# variance v.s n/p
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_variance = mean(v5_variance)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_variance, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) +
+  xlim(c(0,75)) + ylim(c(0,4.5))
+```
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_variance = mean(v5_variance)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("4","5","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_variance, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) +
+  xlim(c(0,75)) + ylim(c(0,2))
+```
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_variance = mean(v5_variance)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_variance, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) +
+  xlim(c(0,75)) + ylim(c(0,4.5))
+```
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(v5_variance = mean(v5_variance)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("4","5","3")) %>% 
+  ggplot(aes(x = no_predictors, y = v5_variance, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) +
+  xlim(c(0,75)) + ylim(c(0,2))
+```
+
+
+
+# mse
+
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(mse = mean(mse)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","3")) %>% 
+  ggplot(aes(x = no_predictors, y = mse, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) 
+```
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 2) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(mse = mean(mse)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("4","5","3")) %>% 
+  ggplot(aes(x = no_predictors, y = mse, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) 
+```
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(mse = mean(mse)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("1","2","3")) %>% 
+  ggplot(aes(x = no_predictors, y = mse, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) 
+```
+
+
+```{r}
+dataq2 %>% 
+  filter(s21 == 4) %>% 
+  group_by(corr,p, no_predictors, vadd_method) %>% 
+  summarise(mse = mean(mse)) %>% #view()
+  mutate(vadd_method = as.character(vadd_method)) %>% 
+  filter(vadd_method %in% c("4","5","3")) %>% 
+  ggplot(aes(x = no_predictors, y = mse, color = vadd_method)) +
+  geom_line() +
+  facet_grid(corr~p) 
+```
+
+
